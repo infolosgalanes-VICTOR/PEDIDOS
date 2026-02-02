@@ -162,7 +162,7 @@
         document.getElementById('coste-envio-txt').innerText = r.rider;
         document.getElementById('btn-menu').disabled = false;
         document.getElementById('btn-tardeo').disabled = false;
-        document.getElementById('loading-msg').classList.add('hidden'); // Ocultar mensaje al cargar
+        document.getElementById('loading-msg').classList.add('hidden');
       })
       .catch(err => {
         console.error("Error cargando menú:", err);
@@ -274,7 +274,12 @@
   }
 
   function resetPagina() { location.reload(); }
-  window.onload = inicializarWeb;
+
+  // Forzamos que la web busque datos nuevos cada vez que se carga
+  window.onload = () => {
+    console.log("Versión v2.1 cargada - Los Galanes");
+    inicializarWeb();
+  };
 </script>
 </body>
 </html>
