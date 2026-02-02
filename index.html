@@ -11,7 +11,7 @@
   .lobster-stroke { font-family: 'Lobster', cursive; color: white; -webkit-text-stroke: 1.5px black; text-shadow: 2px 2px 0 black; }
   .hidden { display: none !important; }
   
-  /* --- MEJORA DE BOTONES PORTAL (PARA MÓVIL) --- */
+  /* --- MEJORA VISUAL: BOTONES Y COLORES --- */
   .btn-portal { 
     width: 180px; 
     padding: 25px; 
@@ -22,12 +22,15 @@
     cursor: pointer; 
     font-size: 2rem; 
     box-shadow: 4px 4px 0px black; 
-    color: black !important; 
+    color: black !important; /* TEXTO SIEMPRE NEGRO */
     text-decoration: none;
     display: inline-block;
   }
   
-  .btn-portal:visited, .btn-portal:active, .btn-portal:focus { color: black !important; }
+  /* Evitar que el móvil cambie el color a azul por ser un botón/enlace */
+  .btn-portal:visited, .btn-portal:active, .btn-portal:focus, .btn-portal:disabled {
+    color: black !important;
+  }
 
   .portal-container {
     display: flex;
@@ -38,11 +41,13 @@
     margin-top: 20px;
   }
 
+  /* ADAPTACIÓN PARA MÓVILES PEQUEÑOS */
   @media (max-width: 480px) {
     #view-bienvenida h1 { font-size: 5rem !important; margin-top: 40px !important; }
-    .portal-container { flex-direction: column; }
+    .portal-container { flex-direction: column; } /* Botones uno sobre otro */
     .btn-portal { width: 85%; margin: 10px auto; }
   }
+  /* -------------------------------------- */
 
   .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
   .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
@@ -106,7 +111,7 @@
   <div id="selector-servicio" style="text-align: left; width: 90%; margin: 20px auto;">
     <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para tomar" onchange="controlarServicio()"> PARA TOMAR</label><br><br>
     <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para llevar" onchange="controlarServicio()"> PARA LLEVAR</label><br><br>
-    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO +<span id="coste-envio-txt">0</span>€</label>
+    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO + <span id="coste-envio-txt">0</span>€</label>
   </div>
 
   <div id="lista-productos"></div>
@@ -134,7 +139,7 @@
 </div>
 
 <script>
-  // COLOQUE AQUÍ SU URL DE GOOGLE APPS SCRIPT
+  // PON AQUÍ LA URL DE TU IMPLEMENTACIÓN 248
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec"; 
 
   let raw = null; let carrito = {}; let seccion = "";
