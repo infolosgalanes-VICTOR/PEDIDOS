@@ -11,7 +11,7 @@
   .lobster-stroke { font-family: 'Lobster', cursive; color: white; -webkit-text-stroke: 1.5px black; text-shadow: 2px 2px 0 black; }
   .hidden { display: none !important; }
   
-  /* --- MEJORA VISUAL: BOTONES Y COLORES --- */
+  /* --- AJUSTES EN BOTONES DE PORTAL --- */
   .btn-portal { 
     width: 180px; 
     padding: 25px; 
@@ -22,12 +22,11 @@
     cursor: pointer; 
     font-size: 2rem; 
     box-shadow: 4px 4px 0px black; 
-    color: black !important; /* TEXTO SIEMPRE NEGRO */
+    color: black !important; /* Texto en negro */
     text-decoration: none;
     display: inline-block;
   }
   
-  /* Evitar que el móvil cambie el color a azul por ser un botón/enlace */
   .btn-portal:visited, .btn-portal:active, .btn-portal:focus, .btn-portal:disabled {
     color: black !important;
   }
@@ -41,13 +40,12 @@
     margin-top: 20px;
   }
 
-  /* ADAPTACIÓN PARA MÓVILES PEQUEÑOS */
+  /* --- ADAPTACIÓN A PANTALLA MÓVIL --- */
   @media (max-width: 480px) {
     #view-bienvenida h1 { font-size: 5rem !important; margin-top: 40px !important; }
-    .portal-container { flex-direction: column; } /* Botones uno sobre otro */
+    .portal-container { flex-direction: column; } /* Botones uno encima de otro */
     .btn-portal { width: 85%; margin: 10px auto; }
   }
-  /* -------------------------------------- */
 
   .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
   .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
@@ -106,6 +104,7 @@
     <button style="position: absolute; top: 15px; left: 15px; background: black; color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold;" onclick="resetPagina()">SALIR</button>
     <h1 class="lobster" style="font-size: 4rem; margin:0;">Los Galanes</h1>
     <div id="sub-header" class="lobster-stroke" style="font-size: 2.5rem; margin-top: 5px;"></div>
+    <div id="nota-tardeo" style="font-weight: bold; font-size: 1rem; margin-top: 25px; color: black;" class="hidden">Si quiere un combinado elija una bebida y un licor</div>
   </div>
   
   <div id="selector-servicio" style="text-align: left; width: 90%; margin: 20px auto;">
@@ -139,7 +138,7 @@
 </div>
 
 <script>
-  // PON AQUÍ LA URL DE TU IMPLEMENTACIÓN 248
+  /* --- SUSTITUYE ESTA URL POR LA DE TU VERSIÓN 248 --- */
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec"; 
 
   let raw = null; let carrito = {}; let seccion = "";
@@ -155,7 +154,7 @@
         document.getElementById('btn-tardeo').disabled = false;
         document.getElementById('btn-tardeo').innerText = "Tardeo";
       })
-      .catch(err => console.error("Error al cargar menú:", err));
+      .catch(err => console.error("Error cargando menú:", err));
   }
 
   function navegar(tipo) {
@@ -163,6 +162,8 @@
     document.getElementById('view-bienvenida').classList.add('hidden');
     document.getElementById('view-pedido').classList.remove('hidden');
     document.getElementById('sub-header').innerText = (tipo === 'menu' ? 'Menú' : 'Tardeo');
+    document.getElementById('nota-tardeo').classList.toggle('hidden', tipo !== 'tardeo');
+    document.getElementById('selector-servicio').classList.toggle('hidden', tipo === 'tardeo');
     render();
     window.scrollTo(0,0);
   }
@@ -216,12 +217,12 @@
     if(!p) return mostrarAlerta("ELIJA UNA FORMA DE PAGO");
     if(!nom || !tel || (s && s.value === "A domicilio" && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
 
-    let h = ""; let t = 0; let itemsArr = [];
+    let h = ""; let t = 0; let n = [];
     for(let k in carrito) { 
       if(carrito[k].q > 0) { 
         h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n}</span><span>${carrito[k].q * carrito[k].p} €</span></div>`; 
         t += carrito[k].q * carrito[k].p;
-        itemsArr.push(`${carrito[k].q}x ${carrito[k].n}`);
+        n.push(`${carrito[k].q}x ${carrito[k].n}`); 
       } 
     }
     let riderCost = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
@@ -232,10 +233,9 @@
     document.getElementById('rev-total').innerText = "TOTAL: " + Math.round(t) + " €";
     
     window.ultimoP = { 
-      action: "procesarPedido",
       nombre: nom, prefijo: document.getElementById('prefijo').value, telefono: tel, 
       tipoServicio: (seccion==='tardeo'?'Tardeo':s.value), pago: p.value, total: Math.round(t), 
-      domicilio: dir, observaciones: document.getElementById('obs-cliente').value, items: itemsArr.join(', ') 
+      domicilio: dir, observaciones: document.getElementById('obs-cliente').value, items: n.join(', ') 
     };
     document.getElementById('modal-revision').classList.remove('hidden');
   }
@@ -247,7 +247,6 @@
       method: 'POST',
       mode: 'no-cors',
       cache: 'no-cache',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(window.ultimoP)
     }).then(() => {
       document.getElementById('modal-revision').classList.add('hidden');
