@@ -22,15 +22,12 @@
     cursor: pointer; 
     font-size: 2rem; 
     box-shadow: 4px 4px 0px black; 
-    color: black !important; /* Forzar color negro */
+    color: black !important; 
     text-decoration: none;
     display: inline-block;
   }
   
-  /* Evitar color azul en móviles */
-  .btn-portal:visited, .btn-portal:active, .btn-portal:focus {
-    color: black !important;
-  }
+  .btn-portal:visited, .btn-portal:active, .btn-portal:focus { color: black !important; }
 
   .portal-container {
     display: flex;
@@ -46,7 +43,6 @@
     .portal-container { flex-direction: column; }
     .btn-portal { width: 85%; margin: 10px auto; }
   }
-  /* -------------------------------------------- */
 
   .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
   .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
@@ -105,13 +101,12 @@
     <button style="position: absolute; top: 15px; left: 15px; background: black; color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold;" onclick="resetPagina()">SALIR</button>
     <h1 class="lobster" style="font-size: 4rem; margin:0;">Los Galanes</h1>
     <div id="sub-header" class="lobster-stroke" style="font-size: 2.5rem; margin-top: 5px;"></div>
-    <div id="nota-tardeo" style="font-weight: bold; font-size: 1rem; margin-top: 25px; color: black;" class="hidden">Si quiere un combinado elija una bebida y un licor</div>
   </div>
   
   <div id="selector-servicio" style="text-align: left; width: 90%; margin: 20px auto;">
     <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para tomar" onchange="controlarServicio()"> PARA TOMAR</label><br><br>
     <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para llevar" onchange="controlarServicio()"> PARA LLEVAR</label><br><br>
-    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO (solo a nuestro mismo CP) +<span id="coste-envio-txt">0</span>€</label>
+    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO +<span id="coste-envio-txt">0</span>€</label>
   </div>
 
   <div id="lista-productos"></div>
@@ -139,17 +134,23 @@
 </div>
 
 <script>
+  // COLOQUE AQUÍ SU URL DE GOOGLE APPS SCRIPT
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec"; 
+
   let raw = null; let carrito = {}; let seccion = "";
 
   function inicializarWeb() {
-    google.script.run.withSuccessHandler(r => {
-      raw = r;
-      document.getElementById('coste-envio-txt').innerText = r.rider;
-      document.getElementById('btn-menu').disabled = false;
-      document.getElementById('btn-menu').innerText = "Menú";
-      document.getElementById('btn-tardeo').disabled = false;
-      document.getElementById('btn-tardeo').innerText = "Tardeo";
-    }).obtenerDatosMenu();
+    fetch(WEB_APP_URL + "?action=obtenerDatosMenu")
+      .then(res => res.json())
+      .then(r => {
+        raw = r;
+        document.getElementById('coste-envio-txt').innerText = r.rider;
+        document.getElementById('btn-menu').disabled = false;
+        document.getElementById('btn-menu').innerText = "Menú";
+        document.getElementById('btn-tardeo').disabled = false;
+        document.getElementById('btn-tardeo').innerText = "Tardeo";
+      })
+      .catch(err => console.error("Error al cargar menú:", err));
   }
 
   function navegar(tipo) {
@@ -157,9 +158,6 @@
     document.getElementById('view-bienvenida').classList.add('hidden');
     document.getElementById('view-pedido').classList.remove('hidden');
     document.getElementById('sub-header').innerText = (tipo === 'menu' ? 'Menú' : 'Tardeo');
-    document.getElementById('nota-tardeo').classList.toggle('hidden', tipo !== 'tardeo');
-    document.getElementById('selector-servicio').classList.toggle('hidden', tipo === 'tardeo');
-    if(tipo === 'tardeo') document.getElementById('label-efectivo').classList.remove('hidden');
     render();
     window.scrollTo(0,0);
   }
@@ -208,52 +206,51 @@
     const nom = document.getElementById('nom').value.trim();
     const tel = document.getElementById('tel').value.trim();
     const dir = document.getElementById('dir').value.trim();
-    const obs = document.getElementById('obs-cliente').value.trim();
     
     if(seccion === 'menu' && !s) return mostrarAlerta("ELIJA UN MODO DE ENTREGA");
     if(!p) return mostrarAlerta("ELIJA UNA FORMA DE PAGO");
     if(!nom || !tel || (s && s.value === "A domicilio" && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
 
-    let h = ""; let t = 0; let n = [];
+    let h = ""; let t = 0; let itemsArr = [];
     for(let k in carrito) { 
       if(carrito[k].q > 0) { 
-        let sub = carrito[k].q * carrito[k].p; 
-        h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n} (${carrito[k].p} €)</span><span>${sub} €</span></div>`; 
-        t += sub;
-        n.push(`${carrito[k].q}x ${carrito[k].n}`); 
+        h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n}</span><span>${carrito[k].q * carrito[k].p} €</span></div>`; 
+        t += carrito[k].q * carrito[k].p;
+        itemsArr.push(`${carrito[k].q}x ${carrito[k].n}`);
       } 
     }
     let riderCost = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
-    if(riderCost > 0) { h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; t += riderCost; }
+    if(riderCost > 0) t += riderCost;
     if(t === 0) return mostrarAlerta("CARRITO VACÍO");
 
     document.getElementById('rev-cliente').innerText = nom.toUpperCase();
-    document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
-    document.getElementById('rev-tipo').innerText = (seccion === 'tardeo' ? 'TARDEO' : s.value.toUpperCase()) + (dir ? ': ' + dir.toUpperCase() : '');
-    document.getElementById('rev-productos').innerHTML = h;
     document.getElementById('rev-total').innerText = "TOTAL: " + Math.round(t) + " €";
     
     window.ultimoP = { 
+      action: "procesarPedido",
       nombre: nom, prefijo: document.getElementById('prefijo').value, telefono: tel, 
       tipoServicio: (seccion==='tardeo'?'Tardeo':s.value), pago: p.value, total: Math.round(t), 
-      domicilio: dir, observaciones: obs, items: n.join(', ') 
+      domicilio: dir, observaciones: document.getElementById('obs-cliente').value, items: itemsArr.join(', ') 
     };
     document.getElementById('modal-revision').classList.remove('hidden');
   }
 
   function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
-  function enviarPedido() { google.script.run.withSuccessHandler(() => { document.getElementById('modal-revision').classList.add('hidden'); document.getElementById('modal-exito').classList.remove('hidden'); }).procesarPedido(window.ultimoP); }
 
-  function resetPagina() {
-    carrito = {};
-    document.getElementById('nom').value = ""; document.getElementById('tel').value = ""; document.getElementById('dir').value = "";
-    document.getElementById('obs-cliente').value = "";
-    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-    document.getElementById('total-pantalla').innerText = "TOTAL: 0 €";
-    document.getElementById('view-pedido').classList.add('hidden');
-    document.getElementById('modal-exito').classList.add('hidden');
-    document.getElementById('view-bienvenida').classList.remove('hidden');
+  function enviarPedido() {
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(window.ultimoP)
+    }).then(() => {
+      document.getElementById('modal-revision').classList.add('hidden');
+      document.getElementById('modal-exito').classList.remove('hidden');
+    });
   }
+
+  function resetPagina() { location.reload(); }
   window.onload = inicializarWeb;
 </script>
 </body>
