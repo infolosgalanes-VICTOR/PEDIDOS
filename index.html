@@ -10,7 +10,44 @@
   .lobster { font-family: 'Lobster', cursive; }
   .lobster-stroke { font-family: 'Lobster', cursive; color: white; -webkit-text-stroke: 1.5px black; text-shadow: 2px 2px 0 black; }
   .hidden { display: none !important; }
-  .btn-portal { width: 180px; padding: 25px; margin: 10px; border: 4px solid black; border-radius: 15px; background: white; cursor: pointer; font-size: 2rem; box-shadow: 4px 4px 0px black; }
+  
+  /* --- MEJORA DE BOTONES PORTAL (PARA MÓVIL) --- */
+  .btn-portal { 
+    width: 180px; 
+    padding: 25px; 
+    margin: 10px; 
+    border: 4px solid black; 
+    border-radius: 15px; 
+    background: white; 
+    cursor: pointer; 
+    font-size: 2rem; 
+    box-shadow: 4px 4px 0px black; 
+    color: black !important; /* Forzar color negro */
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  /* Evitar color azul en móviles */
+  .btn-portal:visited, .btn-portal:active, .btn-portal:focus {
+    color: black !important;
+  }
+
+  .portal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 480px) {
+    #view-bienvenida h1 { font-size: 5rem !important; margin-top: 40px !important; }
+    .portal-container { flex-direction: column; }
+    .btn-portal { width: 85%; margin: 10px auto; }
+  }
+  /* -------------------------------------------- */
+
   .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
   .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
   .tel-input-f { flex: 1; background: transparent; border: none; padding: 15px; font-size: 1.4rem; outline: none; text-transform: uppercase; width: 100%; }
@@ -23,20 +60,14 @@
   .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
   .modal-galanes { background: white; width: 85%; max-width: 400px; border-radius: 25px; padding: 25px; text-align: center; border: 4px solid black; }
   .ticket-linea { display: flex; justify-content: space-between; margin: 5px 0; font-family: monospace; font-size: 0.95rem; }
-  #loading-overlay { background: white; color: black; flex-direction: column; }
 </style>
 </head>
 <body>
 
-<div id="loading-overlay" class="overlay">
-  <div class="lobster" style="font-size: 3rem;">Los Galanes</div>
-  <p>Cargando carta...</p>
-</div>
-
 <div id="modal-alerta" class="overlay hidden">
   <div class="modal-galanes">
     <div id="alerta-texto" style="font-weight: bold; font-size: 1.5rem; margin-bottom: 20px;"></div>
-    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white;" onclick="cerrarAlerta()">ENTENDIDO</button>
+    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white !important;" onclick="cerrarAlerta()">ENTENDIDO</button>
   </div>
 </div>
 
@@ -44,7 +75,7 @@
   <div class="modal-galanes">
     <div style="color: #28a745; font-size: 5rem; line-height: 1;">✓</div>
     <div style="font-weight: bold; font-size: 1.8rem; margin: 10px 0;">Pedido enviado</div>
-    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white;" onclick="resetPagina()">OK</button>
+    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white !important;" onclick="resetPagina()">OK</button>
   </div>
 </div>
 
@@ -56,15 +87,17 @@
     <div id="rev-tipo" style="font-weight:bold; color: #555; border-bottom: 1px dashed #000; padding-bottom: 5px;"></div>
     <div id="rev-productos" style="padding: 10px 0; max-height: 30vh; overflow-y: auto;"></div>
     <div id="rev-total" style="font-size:1.8rem; font-weight:bold; text-align:center; border-top: 2px solid #000; margin-top: 10px; padding-top: 10px;"></div>
-    <button id="btn-confirmar-pago" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:black; color:white; box-shadow:none; font-size: 1rem; padding: 15px; height: auto;" onclick="enviarPedido()">CONFIRMAR PAGO</button>
-    <button class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:#666; color:white; box-shadow:none; font-size: 1.1rem; padding: 15px; height: auto;" onclick="cerrarModal()">MODIFICAR</button>
+    <button id="btn-confirmar-pago" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:black; color:white !important; box-shadow:none; font-size: 1rem; padding: 15px; height: auto;" onclick="enviarPedido()">CONFIRMAR PAGO</button>
+    <button class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:#666; color:white !important; box-shadow:none; font-size: 1.1rem; padding: 15px; height: auto;" onclick="cerrarModal()">MODIFICAR</button>
   </div>
 </div>
 
 <div id="view-bienvenida">
   <h1 class="lobster" style="font-size: 8rem; margin-top: 80px; margin-bottom: 30px;">Los Galanes</h1>
-  <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')" disabled>...</button>
-  <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')" disabled>...</button>
+  <div class="portal-container">
+    <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')" disabled>...</button>
+    <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')" disabled>...</button>
+  </div>
 </div>
 
 <div id="view-pedido" class="hidden">
@@ -106,24 +139,17 @@
 </div>
 
 <script>
-  // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
-  const URL_API = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec"; 
-
   let raw = null; let carrito = {}; let seccion = "";
 
-  async function inicializarWeb() {
-    try {
-      const resp = await fetch(URL_API);
-      raw = await resp.json();
-      document.getElementById('coste-envio-txt').innerText = raw.rider;
+  function inicializarWeb() {
+    google.script.run.withSuccessHandler(r => {
+      raw = r;
+      document.getElementById('coste-envio-txt').innerText = r.rider;
       document.getElementById('btn-menu').disabled = false;
       document.getElementById('btn-menu').innerText = "Menú";
       document.getElementById('btn-tardeo').disabled = false;
       document.getElementById('btn-tardeo').innerText = "Tardeo";
-      document.getElementById('loading-overlay').classList.add('hidden');
-    } catch (e) {
-      alert("Error cargando la carta. Revisa la conexión.");
-    }
+    }).obtenerDatosMenu();
   }
 
   function navegar(tipo) {
@@ -194,7 +220,7 @@
         let sub = carrito[k].q * carrito[k].p; 
         h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n} (${carrito[k].p} €)</span><span>${sub} €</span></div>`; 
         t += sub;
-        n.push(`${carrito[k].q}x ${carrito[k].n}`);
+        n.push(`${carrito[k].q}x ${carrito[k].n}`); 
       } 
     }
     let riderCost = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
@@ -216,28 +242,7 @@
   }
 
   function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
-  
-  async function enviarPedido() {
-    const btn = document.getElementById('btn-confirmar-pago');
-    btn.disabled = true;
-    btn.innerText = "ENVIANDO...";
-    
-    try {
-      await fetch(URL_API, {
-        method: 'POST',
-        mode: 'no-cors', // Necesario para evitar bloqueos de seguridad de Google
-        body: JSON.stringify(window.ultimoP)
-      });
-      // Como usamos 'no-cors', no podemos leer la respuesta, pero si llega aquí es que se envió
-      document.getElementById('modal-revision').classList.add('hidden');
-      document.getElementById('modal-exito').classList.remove('hidden');
-    } catch (e) {
-      alert("Error al enviar. Inténtalo de nuevo.");
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "CONFIRMAR PAGO";
-    }
-  }
+  function enviarPedido() { google.script.run.withSuccessHandler(() => { document.getElementById('modal-revision').classList.add('hidden'); document.getElementById('modal-exito').classList.remove('hidden'); }).procesarPedido(window.ultimoP); }
 
   function resetPagina() {
     carrito = {};
@@ -248,7 +253,6 @@
     document.getElementById('view-pedido').classList.add('hidden');
     document.getElementById('modal-exito').classList.add('hidden');
     document.getElementById('view-bienvenida').classList.remove('hidden');
-    window.scrollTo(0,0);
   }
   window.onload = inicializarWeb;
 </script>
