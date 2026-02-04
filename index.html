@@ -50,6 +50,9 @@
   .ticket-linea { display: flex; justify-content: space-between; margin: 5px 0; font-family: monospace; font-size: 0.95rem; }
   .ticket-linea span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; flex: 1; }
   .ticket-linea span:last-child { white-space: nowrap; font-weight: bold; }
+
+  /* ESTILO PARA AVISO DE CIERRE */
+  .aviso-cierre { background: #FFD700; color: black; padding: 20px; border: 4px solid black; border-radius: 15px; width: 90%; margin: 20px auto; font-weight: bold; font-size: 1.2rem; }
 </style>
 </head>
 <body>
@@ -88,6 +91,10 @@
   <div id="loading-galanes">
     <div class="ojos">👀</div>
     <p style="font-weight: bold; color: #666; font-family: Arial; letter-spacing: 1px;">CARGANDO PRODUCTOS...</p>
+  </div>
+
+  <div id="contenedor-aviso-cierre" class="hidden">
+    <div class="aviso-cierre" id="texto-aviso-cierre"></div>
   </div>
 
   <div id="portal-botones" class="portal-container hidden">
@@ -147,9 +154,16 @@
         raw = r;
         document.getElementById('coste-envio-txt').innerText = r.rider;
         
-        // MOSTRAR BOTONES Y QUITAR OJITOS
-        document.getElementById('loading-galanes').classList.add('hidden');
-        document.getElementById('portal-botones').classList.remove('hidden');
+        // GESTIÓN DE CIERRE
+        if (r.estado === "CERRADO") {
+          document.getElementById('loading-galanes').classList.add('hidden');
+          document.getElementById('contenedor-aviso-cierre').classList.remove('hidden');
+          document.getElementById('texto-aviso-cierre').innerText = r.aviso || "LO SENTIMOS, ESTAMOS CERRADOS EN ESTE MOMENTO.";
+          // No mostramos los botones de portal
+        } else {
+          document.getElementById('loading-galanes').classList.add('hidden');
+          document.getElementById('portal-botones').classList.remove('hidden');
+        }
       })
       .catch(err => {
         console.error("Error cargando el menú:", err);
@@ -164,7 +178,13 @@
     document.getElementById('sub-header').innerText = (tipo === 'menu' ? 'Menú' : 'Tardeo');
     document.getElementById('nota-tardeo').classList.toggle('hidden', tipo !== 'tardeo');
     document.getElementById('selector-servicio').classList.toggle('hidden', tipo === 'tardeo');
-    if(tipo === 'tardeo') document.getElementById('label-efectivo').classList.remove('hidden');
+    
+    // Si es tardeo, ocultamos dirección por defecto y mostramos efectivo
+    if(tipo === 'tardeo') {
+      document.getElementById('label-efectivo').classList.remove('hidden');
+      document.getElementById('dir').classList.add('hidden');
+    }
+    
     render();
     window.scrollTo(0,0);
   }
@@ -218,9 +238,13 @@
     const dir = document.getElementById('dir').value.trim();
     const obs = document.getElementById('obs-cliente').value.trim();
     
+    // REGLAS TARDEO VS MENÚ
     if(seccion === 'menu' && !s) return mostrarAlerta("ELIJA UN MODO DE ENTREGA");
     if(!p) return mostrarAlerta("ELIJA UNA FORMA DE PAGO");
-    if(!nom || !tel || (s && s.value === "A domicilio" && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
+    
+    // En Tardeo no validamos dirección nunca
+    const direccionObligatoria = (seccion === 'menu' && s && s.value === "A domicilio");
+    if(!nom || !tel || (direccionObligatoria && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
 
     let h = ""; let t = 0; let itemsExport = [];
     for(let k in carrito) { 
@@ -237,14 +261,18 @@
 
     document.getElementById('rev-cliente').innerText = nom.toUpperCase();
     document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
-    document.getElementById('rev-tipo').innerText = (seccion === 'tardeo' ? 'TARDEO' : s.value.toUpperCase()) + (dir ? ': ' + dir.toUpperCase() : '');
+    
+    // Texto de tipo de servicio para revisión
+    let tipoTexto = (seccion === 'tardeo') ? 'TARDEO' : s.value.toUpperCase();
+    document.getElementById('rev-tipo').innerText = tipoTexto + (dir && seccion !== 'tardeo' ? ': ' + dir.toUpperCase() : '');
+    
     document.getElementById('rev-productos').innerHTML = h;
     document.getElementById('rev-total').innerText = "TOTAL: " + Math.round(t) + " €";
     
     window.ultimoP = { 
       nombre: nom, prefijo: document.getElementById('prefijo').value, telefono: tel, 
       tipoServicio: (seccion==='tardeo'?'Tardeo':s.value), pago: p.value, total: Math.round(t), 
-      domicilio: dir, observaciones: obs, items: itemsExport.join(', ') 
+      domicilio: (seccion==='tardeo' ? 'N/A' : dir), observaciones: obs, items: itemsExport.join(', ') 
     };
     document.getElementById('modal-revision').classList.remove('hidden');
   }
