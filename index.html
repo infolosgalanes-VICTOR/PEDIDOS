@@ -27,6 +27,14 @@
     .btn-portal { width: 80%; margin: 10px 0; }
   }
 
+  /* ESTILOS CARGA */
+  #loading-galanes { margin-top: 50px; }
+  .ojos { font-size: 5rem; animation: blink 3s infinite; }
+  @keyframes blink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+
   .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
   .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
   .tel-input-f { flex: 1; background: transparent; border: none; padding: 15px; font-size: 1.4rem; outline: none; text-transform: uppercase; width: 100%; }
@@ -39,7 +47,6 @@
   .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
   .modal-galanes { background: white; width: 85%; max-width: 400px; border-radius: 25px; padding: 25px; text-align: center; border: 4px solid black; }
   
-  /* AJUSTE PARA QUE EL EURO NO SE SEPARE DEL PRECIO */
   .ticket-linea { display: flex; justify-content: space-between; margin: 5px 0; font-family: monospace; font-size: 0.95rem; }
   .ticket-linea span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; flex: 1; }
   .ticket-linea span:last-child { white-space: nowrap; font-weight: bold; }
@@ -77,9 +84,15 @@
 
 <div id="view-bienvenida">
   <h1 class="lobster" style="font-size: 8rem; margin-top: 80px; margin-bottom: 30px;">Los Galanes</h1>
-  <div class="portal-container">
-    <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')" disabled>...</button>
-    <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')" disabled>...</button>
+  
+  <div id="loading-galanes">
+    <div class="ojos">👀</div>
+    <p style="font-weight: bold; color: #666; font-family: Arial; letter-spacing: 1px;">CARGANDO PRODUCTOS...</p>
+  </div>
+
+  <div id="portal-botones" class="portal-container hidden">
+    <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')">Menú</button>
+    <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')">Tardeo</button>
   </div>
 </div>
 
@@ -122,7 +135,6 @@
 </div>
 
 <script>
-  // RECUERDA PONER TU SCRIPT_URL AQUÍ
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec";
 
   let raw = null; let carrito = {}; let seccion = "";
@@ -131,20 +143,17 @@
     fetch(SCRIPT_URL + "?action=obtenerDatosMenu")
       .then(response => response.json())
       .then(r => {
-        if (r.error) {
-          alert("Error: " + r.error);
-          return;
-        }
+        if (r.error) { alert("Error: " + r.error); return; }
         raw = r;
         document.getElementById('coste-envio-txt').innerText = r.rider;
-        document.getElementById('btn-menu').disabled = false;
-        document.getElementById('btn-menu').innerText = "Menú";
-        document.getElementById('btn-tardeo').disabled = false;
-        document.getElementById('btn-tardeo').innerText = "Tardeo";
+        
+        // MOSTRAR BOTONES Y QUITAR OJITOS
+        document.getElementById('loading-galanes').classList.add('hidden');
+        document.getElementById('portal-botones').classList.remove('hidden');
       })
       .catch(err => {
         console.error("Error cargando el menú:", err);
-        document.getElementById('btn-menu').innerText = "Error";
+        document.getElementById('loading-galanes').innerHTML = '<p style="color:red">Error de conexión</p>';
       });
   }
 
@@ -191,17 +200,10 @@
     const s = document.querySelector('input[name="servicio"]:checked');
     const esDom = (s && s.value === "A domicilio");
     document.getElementById('dir').classList.toggle('hidden', !esDom);
-    
-    // OCULTAR EFECTIVO SI ES DOMICILIO
     const labelEfectivo = document.getElementById('label-efectivo');
     labelEfectivo.classList.toggle('hidden', esDom);
-    
-    // Si estaba seleccionado efectivo y ahora es domicilio, desmarcarlo
     const pagoEfectivo = document.querySelector('input[name="pago"][value="Efectivo"]');
-    if (esDom && pagoEfectivo.checked) {
-        pagoEfectivo.checked = false;
-    }
-    
+    if (esDom && pagoEfectivo.checked) { pagoEfectivo.checked = false; }
     actualizarTotal();
   }
 
@@ -224,19 +226,13 @@
     for(let k in carrito) { 
       if(carrito[k].q > 0) { 
         let sub = carrito[k].q * carrito[k].p; 
-        // Formato visual en el modal
         h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n} (${Math.round(carrito[k].p)} €)</span><span>${Math.round(sub)} €</span></div>`; 
         t += sub;
-        // FORMATO REQUERIDO PARA PEDIDOS!F2:F
         itemsExport.push(`${carrito[k].q}X ${carrito[k].n.toUpperCase()} (${Math.round(carrito[k].p)} €)`); 
       } 
     }
     let riderCost = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
-    if(riderCost > 0) { 
-        h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; 
-        t += riderCost; 
-    }
-    
+    if(riderCost > 0) { h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; t += riderCost; }
     if(t === 0) return mostrarAlerta("CARRITO VACÍO");
 
     document.getElementById('rev-cliente').innerText = nom.toUpperCase();
@@ -254,12 +250,8 @@
   }
 
   function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
-  
   function enviarPedido() {
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(window.ultimoP)
-    })
+    fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(window.ultimoP) })
     .then(() => {
       document.getElementById('modal-revision').classList.add('hidden');
       document.getElementById('modal-exito').classList.remove('hidden');
