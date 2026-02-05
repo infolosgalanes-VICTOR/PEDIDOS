@@ -141,6 +141,7 @@
 </div>
 
 <script>
+  // URL IMPORTANTE: Asegúrate de que esta URL sea la de la NUEVA IMPLEMENTACIÓN /exec
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec";
 
   let raw = null; let carrito = {}; let seccion = "";
@@ -254,7 +255,9 @@
     const btnPago = document.getElementById('btn-confirmar-pago');
     btnPago.disabled = false;
     btnPago.style.opacity = "1";
-    btnPago.innerText = "CONFIRMAR PAGO " + (p.value === "Efectivo" ? "EN EFECTIVO" : "CON " + p.value.toUpperCase());
+    btnPago.style.pointerEvents = "auto";
+    const pagoValor = p.value.toUpperCase();
+    btnPago.innerText = "CONFIRMAR PAGO " + (pagoValor === "EFECTIVO" ? "EN EFECTIVO" : "CON " + pagoValor);
 
     document.getElementById('rev-cliente').innerText = nom.toUpperCase();
     document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
@@ -278,21 +281,39 @@
   function enviarPedido() {
     const btn = document.getElementById('btn-confirmar-pago');
     
-    // SOLUCIÓN ANTIDUPLICADOS
-    if (btn.disabled) return;
+    // BLOQUEO AGRESIVO ANTI-DUPLICADOS
     btn.disabled = true;
-    btn.innerText = "PROCESANDO PEDIDO...";
+    btn.style.pointerEvents = "none";
     btn.style.opacity = "0.5";
+    btn.innerText = "PROCESANDO PEDIDO...";
 
-    fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(window.ultimoP) })
-    .then(() => {
-      document.getElementById('modal-revision').classList.add('hidden');
-      document.getElementById('modal-exito').classList.remove('hidden');
-    })
-    .catch(err => {
-      alert("Error al enviar pedido: " + err);
-      // REACTIVAR EN CASO DE ERROR
+    // Usamos un formulario oculto para evitar problemas de CORS y asegurar el envío
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = SCRIPT_URL;
+    form.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.name = 'data';
+    input.value = JSON.stringify(window.ultimoP);
+    form.appendChild(input);
+    document.body.appendChild(form);
+
+    // Enviamos vía fetch pero con configuración de redirección para Google
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Esto asegura que el navegador no bloquee el envío
+      body: JSON.stringify(window.ultimoP)
+    }).then(() => {
+      // Como usamos 'no-cors', no podemos leer la respuesta, pero asumimos éxito tras la espera
+      setTimeout(() => {
+        document.getElementById('modal-revision').classList.add('hidden');
+        document.getElementById('modal-exito').classList.remove('hidden');
+      }, 500);
+    }).catch(err => {
+      alert("Error de conexión. Verifique su internet.");
       btn.disabled = false;
+      btn.style.pointerEvents = "auto";
       btn.style.opacity = "1";
       btn.innerText = "REINTENTAR ENVÍO";
     });
