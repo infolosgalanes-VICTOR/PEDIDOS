@@ -51,7 +51,6 @@
   .ticket-linea span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; flex: 1; }
   .ticket-linea span:last-child { white-space: nowrap; font-weight: bold; }
 
-  /* ESTILO PARA AVISO DE CIERRE */
   .aviso-cierre { background: #FFD700; color: black; padding: 20px; border: 4px solid black; border-radius: 15px; width: 90%; margin: 20px auto; font-weight: bold; font-size: 1.2rem; }
 </style>
 </head>
@@ -81,7 +80,7 @@
     <div id="rev-productos" style="padding: 10px 0; max-height: 30vh; overflow-y: auto;"></div>
     <div id="rev-total" style="font-size:1.8rem; font-weight:bold; text-align:center; border-top: 2px solid #000; margin-top: 10px; padding-top: 10px;"></div>
     <button id="btn-confirmar-pago" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:black; color:white !important; box-shadow:none; font-size: 1rem; padding: 15px; height: auto;" onclick="enviarPedido()">CONFIRMAR PAGO</button>
-    <button class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:#666; color:white !important; box-shadow:none; font-size: 1.1rem; padding: 15px; height: auto;" onclick="cerrarModal()">MODIFICAR</button>
+    <button id="btn-modificar" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:#666; color:white !important; box-shadow:none; font-size: 1.1rem; padding: 15px; height: auto;" onclick="cerrarModal()">MODIFICAR</button>
   </div>
 </div>
 
@@ -153,13 +152,10 @@
         if (r.error) { alert("Error: " + r.error); return; }
         raw = r;
         document.getElementById('coste-envio-txt').innerText = r.rider;
-        
-        // GESTIÓN DE CIERRE
         if (r.estado === "CERRADO") {
           document.getElementById('loading-galanes').classList.add('hidden');
           document.getElementById('contenedor-aviso-cierre').classList.remove('hidden');
           document.getElementById('texto-aviso-cierre').innerText = r.aviso || "LO SENTIMOS, ESTAMOS CERRADOS EN ESTE MOMENTO.";
-          // No mostramos los botones de portal
         } else {
           document.getElementById('loading-galanes').classList.add('hidden');
           document.getElementById('portal-botones').classList.remove('hidden');
@@ -178,13 +174,10 @@
     document.getElementById('sub-header').innerText = (tipo === 'menu' ? 'Menú' : 'Tardeo');
     document.getElementById('nota-tardeo').classList.toggle('hidden', tipo !== 'tardeo');
     document.getElementById('selector-servicio').classList.toggle('hidden', tipo === 'tardeo');
-    
-    // Si es tardeo, ocultamos dirección por defecto y mostramos efectivo
     if(tipo === 'tardeo') {
       document.getElementById('label-efectivo').classList.remove('hidden');
       document.getElementById('dir').classList.add('hidden');
     }
-    
     render();
     window.scrollTo(0,0);
   }
@@ -238,11 +231,9 @@
     const dir = document.getElementById('dir').value.trim();
     const obs = document.getElementById('obs-cliente').value.trim();
     
-    // REGLAS TARDEO VS MENÚ
     if(seccion === 'menu' && !s) return mostrarAlerta("ELIJA UN MODO DE ENTREGA");
     if(!p) return mostrarAlerta("ELIJA UNA FORMA DE PAGO");
     
-    // En Tardeo no validamos dirección nunca
     const direccionObligatoria = (seccion === 'menu' && s && s.value === "A domicilio");
     if(!nom || !tel || (direccionObligatoria && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
 
@@ -259,10 +250,15 @@
     if(riderCost > 0) { h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; t += riderCost; }
     if(t === 0) return mostrarAlerta("CARRITO VACÍO");
 
+    // PERSONALIZACIÓN DEL BOTÓN DE CONFIRMACIÓN
+    const btnPago = document.getElementById('btn-confirmar-pago');
+    btnPago.disabled = false;
+    btnPago.style.opacity = "1";
+    btnPago.innerText = "CONFIRMAR PAGO " + (p.value === "Efectivo" ? "EN EFECTIVO" : "CON " + p.value.toUpperCase());
+
     document.getElementById('rev-cliente').innerText = nom.toUpperCase();
     document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
     
-    // Texto de tipo de servicio para revisión
     let tipoTexto = (seccion === 'tardeo') ? 'TARDEO' : s.value.toUpperCase();
     document.getElementById('rev-tipo').innerText = tipoTexto + (dir && seccion !== 'tardeo' ? ': ' + dir.toUpperCase() : '');
     
@@ -278,13 +274,28 @@
   }
 
   function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
+  
   function enviarPedido() {
+    const btn = document.getElementById('btn-confirmar-pago');
+    
+    // SOLUCIÓN ANTIDUPLICADOS
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.innerText = "PROCESANDO PEDIDO...";
+    btn.style.opacity = "0.5";
+
     fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(window.ultimoP) })
     .then(() => {
       document.getElementById('modal-revision').classList.add('hidden');
       document.getElementById('modal-exito').classList.remove('hidden');
     })
-    .catch(err => alert("Error al enviar pedido: " + err));
+    .catch(err => {
+      alert("Error al enviar pedido: " + err);
+      // REACTIVAR EN CASO DE ERROR
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.innerText = "REINTENTAR ENVÍO";
+    });
   }
 
   function resetPagina() {
