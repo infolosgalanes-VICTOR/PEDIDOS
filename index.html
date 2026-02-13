@@ -4,332 +4,51 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
 <style>
-  * { touch-action: manipulation; box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; margin: 0; text-align: center; background: white; }
-  .lobster { font-family: 'Lobster', cursive; }
-  .lobster-stroke { font-family: 'Lobster', cursive; color: white; -webkit-text-stroke: 1.5px black; text-shadow: 2px 2px 0 black; }
-  .hidden { display: none !important; }
-  
-  .btn-portal { 
-    width: 180px; padding: 25px; margin: 10px; border: 4px solid black; border-radius: 15px; 
-    background: white; cursor: pointer; font-size: 2rem; box-shadow: 4px 4px 0px black; 
-    color: black !important; text-decoration: none; display: inline-block;
-  }
-  
-  .btn-portal:visited, .btn-portal:active, .btn-portal:focus { color: black !important; }
-
-  .portal-container { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-
-  @media (max-width: 480px) {
-    #view-bienvenida h1 { font-size: 5rem !important; margin-top: 40px !important; }
-    .portal-container { flex-direction: column; }
-    .btn-portal { width: 80%; margin: 10px 0; }
-  }
-
-  /* ESTILOS CARGA */
-  #loading-galanes { margin-top: 50px; }
-  .ojos { font-size: 5rem; animation: blink 3s infinite; }
-  @keyframes blink {
-    0%, 90%, 100% { transform: scaleY(1); }
-    95% { transform: scaleY(0.1); }
-  }
-
-  .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
-  .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
-  .tel-input-f { flex: 1; background: transparent; border: none; padding: 15px; font-size: 1.4rem; outline: none; text-transform: uppercase; width: 100%; }
-  .datos-input { width: 90%; height: 60px; padding: 0 18px; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; font-size: 1.4rem; display: block; text-transform: uppercase; }
-  .categoria-titulo { background: #000; color: #fff; padding: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
-  .producto-fila { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; text-align: left; }
-  .prod-info { flex: 1; }
-  .btn-cantidad { font-size: 1.5rem; width: 38px; height: 38px; border: 2px solid black; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; cursor: pointer; }
-  .input-cantidad { background: #FFEE00; border: 2px solid black; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 5px; }
-  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-  .modal-galanes { background: white; width: 85%; max-width: 400px; border-radius: 25px; padding: 25px; text-align: center; border: 4px solid black; }
-  
-  .ticket-linea { display: flex; justify-content: space-between; margin: 5px 0; font-family: monospace; font-size: 0.95rem; }
-  .ticket-linea span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; flex: 1; }
-  .ticket-linea span:last-child { white-space: nowrap; font-weight: bold; }
-
-  .aviso-cierre { background: #FFD700; color: black; padding: 20px; border: 4px solid black; border-radius: 15px; width: 90%; margin: 20px auto; font-weight: bold; font-size: 1.2rem; }
+* { touch-action: manipulation; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin: 0; text-align: center; background: white; }
+.lobster { font-family: 'Lobster', cursive; }
+.lobster-stroke { font-family: 'Lobster', cursive; color: white; -webkit-text-stroke: 1.5px black; text-shadow: 2px 2px 0 black; }
+.hidden { display: none !important; }
+.btn-portal { width: 180px; padding: 25px; margin: 10px; border: 4px solid black; border-radius: 15px; background: white; cursor: pointer; font-size: 2rem; box-shadow: 4px 4px 0px black; }
+.portal-container { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.categoria-titulo { background: #000; color: #fff; padding: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+.producto-fila { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; text-align: left; }
+.prod-info { flex: 1; }
+.btn-cantidad { font-size: 1.5rem; width: 38px; height: 38px; border: 2px solid black; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; cursor: pointer; }
+.input-cantidad { background: #FFEE00; border: 2px solid black; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 5px; }
+.datos-input { width: 90%; height: 60px; padding: 0 18px; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; font-size: 1.4rem; display: block; text-transform: uppercase; }
+.contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
+.prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); }
+.tel-input-f { flex: 1; background: transparent; border: none; padding: 15px; font-size: 1.4rem; outline: none; text-transform: uppercase; }
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+.modal-galanes { background: white; width: 85%; max-width: 400px; border-radius: 25px; padding: 25px; text-align: center; border: 4px solid black; }
+.ticket-linea { display: flex; justify-content: space-between; margin: 5px 0; font-family: monospace; font-size: 0.95rem; }
 </style>
 </head>
-<body>
 
-<div id="modal-alerta" class="overlay hidden">
-  <div class="modal-galanes">
-    <div id="alerta-texto" style="font-weight: bold; font-size: 1.5rem; margin-bottom: 20px;"></div>
-    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white !important;" onclick="cerrarAlerta()">ENTENDIDO</button>
-  </div>
-</div>
+<body>
 
 <div id="modal-exito" class="overlay hidden">
   <div class="modal-galanes">
-    <div style="color: #28a745; font-size: 5rem; line-height: 1;">✓</div>
+    <div style="color: #28a745; font-size: 5rem;">✓</div>
     <div style="font-weight: bold; font-size: 1.8rem; margin: 10px 0;">Pedido enviado</div>
-    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white !important;" onclick="resetPagina()">OK</button>
-  </div>
-</div>
-
-<div id="modal-revision" class="overlay hidden">
-  <div class="modal-galanes" style="text-align: left;">
-    <div class="lobster" style="font-size: 2.5rem; text-align: center; margin-bottom: 15px;">Su Comanda</div>
-    <div id="rev-cliente" style="font-weight:bold; font-size: 1.2rem;"></div>
-    <div id="rev-tel" style="margin-bottom: 5px;"></div>
-    <div id="rev-tipo" style="font-weight:bold; color: #555; border-bottom: 1px dashed #000; padding-bottom: 5px;"></div>
-    <div id="rev-productos" style="padding: 10px 0; max-height: 30vh; overflow-y: auto;"></div>
-    <div id="rev-total" style="font-size:1.8rem; font-weight:bold; text-align:center; border-top: 2px solid #000; margin-top: 10px; padding-top: 10px;"></div>
-    <button id="btn-confirmar-pago" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:black; color:white !important; box-shadow:none; font-size: 1rem; padding: 15px; height: auto;" onclick="enviarPedido()">CONFIRMAR PAGO</button>
-    <button id="btn-modificar" class="btn-portal" style="width:100%; margin: 10px 0 0 0; background:#666; color:white !important; box-shadow:none; font-size: 1.1rem; padding: 15px; height: auto;" onclick="cerrarModal()">MODIFICAR</button>
+    <button class="btn-portal" style="width: 100%; background: black; color: white;" onclick="resetPagina()">OK</button>
   </div>
 </div>
 
 <div id="view-bienvenida">
-  <h1 class="lobster" style="font-size: 8rem; margin-top: 80px; margin-bottom: 30px;">Los Galanes</h1>
-  
-  <div id="loading-galanes">
-    <div class="ojos">👀</div>
-    <p style="font-weight: bold; color: #666; font-family: Arial; letter-spacing: 1px;">CARGANDO PRODUCTOS...</p>
-  </div>
-
-  <div id="contenedor-aviso-cierre" class="hidden">
-    <div class="aviso-cierre" id="texto-aviso-cierre"></div>
-  </div>
-
-  <div id="portal-botones" class="portal-container hidden">
-    <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')">Menú</button>
-    <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')">Tardeo</button>
+  <h1 class="lobster" style="font-size: 6rem; margin-top: 60px;">Los Galanes</h1>
+  <div id="portal-botones" class="portal-container">
+    <button class="btn-portal lobster" onclick="navegar()">Menú</button>
   </div>
 </div>
 
 <div id="view-pedido" class="hidden">
-  <div style="padding: 20px; position: relative; border-bottom: 2px solid #000;">
-    <button style="position: absolute; top: 15px; left: 15px; background: black; color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold;" onclick="resetPagina()">SALIR</button>
-    <h1 class="lobster" style="font-size: 4rem; margin:0;">Los Galanes</h1>
-    <div id="sub-header" class="lobster-stroke" style="font-size: 2.5rem; margin-top: 5px;"></div>
-    <div id="nota-tardeo" style="font-weight: bold; font-size: 1rem; margin-top: 25px; color: black;" class="hidden">Si quiere un combinado elija una bebida y un licor</div>
-  </div>
-  
-  <div id="selector-servicio" style="text-align: left; width: 90%; margin: 20px auto;">
-    <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para tomar" onchange="controlarServicio()"> PARA TOMAR</label><br><br>
-    <label style="font-weight:bold;"><input type="radio" name="servicio" value="Para llevar" onchange="controlarServicio()"> PARA LLEVAR</label><br><br>
-    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO (solo a nuestro mismo CP) +<span id="coste-envio-txt">0</span>€</label>
+  <div style="padding: 20px; border-bottom: 2px solid #000;">
+    <button onclick="resetPagina()">SALIR</button>
+    <h1 class="lobster" style="font-size: 3rem;">Los Galanes</h1>
   </div>
 
-  <div id="lista-productos"></div>
-
-  <div style="padding: 10px 0;">
-    <input type="text" id="obs-cliente" class="datos-input" placeholder="OBSERVACIONES">
-  </div>
-
-  <div style="padding: 20px 0; background: #f9f9f9; border-top: 2px solid #000;">
-    <h3 style="text-align:left; width:90%; margin: 0 auto 10px auto;">FORMA DE PAGO</h3>
-    <div style="text-align:left; width:90%; margin: 0 auto;">
-      <label id="label-efectivo"><input type="radio" name="pago" value="Efectivo"> EFECTIVO<br></label>
-      <label><input type="radio" name="pago" value="Tarjeta"> TARJETA<br></label>
-      <label><input type="radio" name="pago" value="Bizum"> BIZUM</label>
-    </div>
-    <div id="total-pantalla" style="font-size: 2rem; font-weight: bold; margin: 20px; border: 3px solid #000; padding: 10px; display: inline-block; border-radius: 15px;">TOTAL: 0 €</div>
-    <input type="text" id="nom" class="datos-input" placeholder="SU NOMBRE">
-    <div class="contenedor-tel">
-      <select id="prefijo" class="prefijo-select"><option value="+34">🇪🇸+34</option><option value="+">🌎</option></select>
-      <input type="tel" id="tel" class="tel-input-f" placeholder="SU TELÉFONO">
-    </div>
-    <input type="text" id="dir" class="datos-input hidden" placeholder="DIRECCIÓN DE ENVÍO">
-    <button class="btn-portal" style="width:90%; margin-top: 20px;" onclick="validarYRevisar()">REVISAR COMANDA</button>
-  </div>
-</div>
-
-<script>
-  // URL IMPORTANTE: Asegúrate de que esta URL sea la de la NUEVA IMPLEMENTACIÓN /exec
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec";
-
-  let raw = null; let carrito = {}; let seccion = "";
-
-  function inicializarWeb() {
-    fetch(SCRIPT_URL + "?action=obtenerDatosMenu")
-      .then(response => response.json())
-      .then(r => {
-        if (r.error) { alert("Error: " + r.error); return; }
-        raw = r;
-        document.getElementById('coste-envio-txt').innerText = r.rider;
-        if (r.estado === "CERRADO") {
-          document.getElementById('loading-galanes').classList.add('hidden');
-          document.getElementById('contenedor-aviso-cierre').classList.remove('hidden');
-          document.getElementById('texto-aviso-cierre').innerText = r.aviso || "LO SENTIMOS, ESTAMOS CERRADOS EN ESTE MOMENTO.";
-        } else {
-          document.getElementById('loading-galanes').classList.add('hidden');
-          document.getElementById('portal-botones').classList.remove('hidden');
-        }
-      })
-      .catch(err => {
-        console.error("Error cargando el menú:", err);
-        document.getElementById('loading-galanes').innerHTML = '<p style="color:red">Error de conexión</p>';
-      });
-  }
-
-  function navegar(tipo) {
-    seccion = tipo;
-    document.getElementById('view-bienvenida').classList.add('hidden');
-    document.getElementById('view-pedido').classList.remove('hidden');
-    document.getElementById('sub-header').innerText = (tipo === 'menu' ? 'Menú' : 'Tardeo');
-    document.getElementById('nota-tardeo').classList.toggle('hidden', tipo !== 'tardeo');
-    document.getElementById('selector-servicio').classList.toggle('hidden', tipo === 'tardeo');
-    if(tipo === 'tardeo') {
-      document.getElementById('label-efectivo').classList.remove('hidden');
-      document.getElementById('dir').classList.add('hidden');
-    }
-    render();
-    window.scrollTo(0,0);
-  }
-
-  function render() {
-    const cont = document.getElementById('lista-productos'); cont.innerHTML = "";
-    if(!raw) return;
-    let cats = (seccion === 'menu') ? raw.orden.filter(c => c.toUpperCase() !== 'LICORES') : raw.orden.filter(c => c.toUpperCase() === 'BEBIDAS' || c.toUpperCase() === 'LICORES');
-    cats.forEach(cat => {
-      cont.innerHTML += `<div class="categoria-titulo">${cat}</div>`;
-      raw.menu[cat].forEach((p, i) => {
-        const id = btoa(unescape(encodeURIComponent(cat + p.nombre))).replace(/=/g,"");
-        cont.innerHTML += `<div class="producto-fila"><div class="prod-info"><b>${p.nombre}</b><br><small>${p.espec || ''}</small></div><div style="display:flex; align-items:center;"><span style="font-weight:bold;">${Math.round(p.precio)}€</span><div class="btn-cantidad" style="margin-left:10px" onclick="cambiar('${id}','${cat}',${i},-1)">-</div><div id="q_${id}" class="input-cantidad">0</div><div class="btn-cantidad" onclick="cambiar('${id}','${cat}',${i},1)">+</div></div></div>`;
-      });
-    });
-  }
-
-  function cambiar(id, cat, idx, d) {
-    if(!carrito[id]) carrito[id] = { q:0, n: raw.menu[cat][idx].nombre, p: raw.menu[cat][idx].precio };
-    carrito[id].q = Math.max(0, carrito[id].q + d);
-    document.getElementById('q_'+id).innerText = carrito[id].q;
-    actualizarTotal();
-  }
-
-  function actualizarTotal() {
-    let sub = 0; for(let k in carrito) sub += carrito[k].q * carrito[k].p;
-    const s = document.querySelector('input[name="servicio"]:checked');
-    let extra = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
-    document.getElementById('total-pantalla').innerText = "TOTAL: " + Math.round(sub + extra) + " €";
-  }
-
-  function controlarServicio() {
-    const s = document.querySelector('input[name="servicio"]:checked');
-    const esDom = (s && s.value === "A domicilio");
-    document.getElementById('dir').classList.toggle('hidden', !esDom);
-    const labelEfectivo = document.getElementById('label-efectivo');
-    labelEfectivo.classList.toggle('hidden', esDom);
-    const pagoEfectivo = document.querySelector('input[name="pago"][value="Efectivo"]');
-    if (esDom && pagoEfectivo.checked) { pagoEfectivo.checked = false; }
-    actualizarTotal();
-  }
-
-  function mostrarAlerta(msg) { document.getElementById('alerta-texto').innerText = msg; document.getElementById('modal-alerta').classList.remove('hidden'); }
-  function cerrarAlerta() { document.getElementById('modal-alerta').classList.add('hidden'); }
-
-  function validarYRevisar() {
-    const s = document.querySelector('input[name="servicio"]:checked');
-    const p = document.querySelector('input[name="pago"]:checked');
-    const nom = document.getElementById('nom').value.trim();
-    const tel = document.getElementById('tel').value.trim();
-    const dir = document.getElementById('dir').value.trim();
-    const obs = document.getElementById('obs-cliente').value.trim();
-    
-    if(seccion === 'menu' && !s) return mostrarAlerta("ELIJA UN MODO DE ENTREGA");
-    if(!p) return mostrarAlerta("ELIJA UNA FORMA DE PAGO");
-    
-    const direccionObligatoria = (seccion === 'menu' && s && s.value === "A domicilio");
-    if(!nom || !tel || (direccionObligatoria && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
-
-    let h = ""; let t = 0; let itemsExport = [];
-    for(let k in carrito) { 
-      if(carrito[k].q > 0) { 
-        let sub = carrito[k].q * carrito[k].p; 
-        h += `<div class="ticket-linea"><span>${carrito[k].q}x ${carrito[k].n} (${Math.round(carrito[k].p)} €)</span><span>${Math.round(sub)} €</span></div>`; 
-        t += sub;
-        itemsExport.push(`${carrito[k].q}X ${carrito[k].n.toUpperCase()} (${Math.round(carrito[k].p)} €)`); 
-      } 
-    }
-    let riderCost = (seccion === 'menu' && s && s.value === "A domicilio") ? parseFloat(raw.rider) : 0;
-    if(riderCost > 0) { h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; t += riderCost; }
-    if(t === 0) return mostrarAlerta("CARRITO VACÍO");
-
-    // PERSONALIZACIÓN DEL BOTÓN DE CONFIRMACIÓN
-    const btnPago = document.getElementById('btn-confirmar-pago');
-    btnPago.disabled = false;
-    btnPago.style.opacity = "1";
-    btnPago.style.pointerEvents = "auto";
-    const pagoValor = p.value.toUpperCase();
-    btnPago.innerText = "CONFIRMAR PAGO " + (pagoValor === "EFECTIVO" ? "EN EFECTIVO" : "CON " + pagoValor);
-
-    document.getElementById('rev-cliente').innerText = nom.toUpperCase();
-    document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
-    
-    let tipoTexto = (seccion === 'tardeo') ? 'TARDEO' : s.value.toUpperCase();
-    document.getElementById('rev-tipo').innerText = tipoTexto + (dir && seccion !== 'tardeo' ? ': ' + dir.toUpperCase() : '');
-    
-    document.getElementById('rev-productos').innerHTML = h;
-    document.getElementById('rev-total').innerText = "TOTAL: " + Math.round(t) + " €";
-    
-    window.ultimoP = { 
-      nombre: nom, prefijo: document.getElementById('prefijo').value, telefono: tel, 
-      tipoServicio: (seccion==='tardeo'?'Tardeo':s.value), pago: p.value, total: Math.round(t), 
-      domicilio: (seccion==='tardeo' ? 'N/A' : dir), observaciones: obs, items: itemsExport.join(', ') 
-    };
-    document.getElementById('modal-revision').classList.remove('hidden');
-  }
-
-  function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
-  
-  function enviarPedido() {
-    const btn = document.getElementById('btn-confirmar-pago');
-    
-    // BLOQUEO AGRESIVO ANTI-DUPLICADOS
-    btn.disabled = true;
-    btn.style.pointerEvents = "none";
-    btn.style.opacity = "0.5";
-    btn.innerText = "PROCESANDO PEDIDO...";
-
-    // Usamos un formulario oculto para evitar problemas de CORS y asegurar el envío
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = SCRIPT_URL;
-    form.style.display = 'none';
-
-    const input = document.createElement('input');
-    input.name = 'data';
-    input.value = JSON.stringify(window.ultimoP);
-    form.appendChild(input);
-    document.body.appendChild(form);
-
-    // Enviamos vía fetch pero con configuración de redirección para Google
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Esto asegura que el navegador no bloquee el envío
-      body: JSON.stringify(window.ultimoP)
-    }).then(() => {
-      // Como usamos 'no-cors', no podemos leer la respuesta, pero asumimos éxito tras la espera
-      setTimeout(() => {
-        document.getElementById('modal-revision').classList.add('hidden');
-        document.getElementById('modal-exito').classList.remove('hidden');
-      }, 500);
-    }).catch(err => {
-      alert("Error de conexión. Verifique su internet.");
-      btn.disabled = false;
-      btn.style.pointerEvents = "auto";
-      btn.style.opacity = "1";
-      btn.innerText = "REINTENTAR ENVÍO";
-    });
-  }
-
-  function resetPagina() {
-    carrito = {};
-    document.getElementById('nom').value = ""; document.getElementById('tel').value = ""; document.getElementById('dir').value = "";
-    document.getElementById('obs-cliente').value = "";
-    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-    document.getElementById('total-pantalla').innerText = "TOTAL: 0 €";
-    document.getElementById('view-pedido').classList.add('hidden');
-    document.getElementById('modal-exito').classList.add('hidden');
-    document.getElementById('view-bienvenida').classList.remove('hidden');
-  }
-  window.onload = inicializarWeb;
-</script>
-</body>
-</html>
+  <div id="lista-productos">
