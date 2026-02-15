@@ -186,7 +186,6 @@
      cont.innerHTML += `<div class="categoria-titulo">${cat}</div>`;
      raw.menu[cat].forEach((p, i) => {
        const id = btoa(unescape(encodeURIComponent(cat + p.nombre))).replace(/=/g,"");
-       // Usamos data-nombre original para comparación exacta
        cont.innerHTML += `<div class="producto-fila" data-nombre="${p.nombre}"><div class="prod-info"><b>${p.nombre}</b><br><small>${p.espec || ''}</small></div><div style="display:flex; align-items:center;"><span style="font-weight:bold;">${Math.round(p.precio)}€</span><div class="btn-cantidad" style="margin-left:10px" onclick="cambiar('${id}','${cat}',${i},-1)">-</div><div id="q_${id}" class="input-cantidad">0</div><div class="btn-cantidad" onclick="cambiar('${id}','${cat}',${i},1)">+</div></div></div>`;
      });
    });
@@ -210,6 +209,7 @@
  function controlarServicio() {
    const s = document.querySelector('input[name="servicio"]:checked');
    const esDom = (s && s.value === "A domicilio");
+   const esLlevar = (s && s.value === "Para llevar");
    
    document.getElementById('dir').classList.toggle('hidden', !esDom);
    const labelEfectivo = document.getElementById('label-efectivo');
@@ -217,14 +217,14 @@
    const pagoEfectivo = document.querySelector('input[name="pago"][value="Efectivo"]');
    if (esDom && pagoEfectivo && pagoEfectivo.checked) { pagoEfectivo.checked = false; }
 
-   // --- LÓGICA DE RESTRICCIÓN EXACTA ---
+   // --- LÓGICA DE RESTRICCIÓN PARA LLEVAR Y A DOMICILIO ---
    const filas = document.querySelectorAll('.producto-fila');
    filas.forEach(fila => {
      const nombre = fila.getAttribute('data-nombre') || "";
-     // Búsqueda exacta de las palabras solicitadas
      const esVinoRestringido = (nombre === "Copa de vino blanco" || nombre === "Copa de vino tinto");
      
-     if (esDom && esVinoRestringido) {
+     // Si es a domicilio O es para llevar, ocultamos y limpiamos carrito
+     if ((esDom || esLlevar) && esVinoRestringido) {
        fila.classList.add('hidden');
        const idCant = fila.querySelector('.input-cantidad').id;
        const idCarrito = idCant.replace('q_', '');
@@ -233,6 +233,7 @@
          document.getElementById(idCant).innerText = "0";
        }
      } else if (esVinoRestringido) {
+       // Solo se muestra si elige "Para tomar"
        fila.classList.remove('hidden');
      }
    });
