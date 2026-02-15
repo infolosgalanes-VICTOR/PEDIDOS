@@ -17,16 +17,13 @@
  }
   .btn-portal:visited, .btn-portal:active, .btn-portal:focus { color: black !important; }
 
-
  .portal-container { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-
 
  @media (max-width: 480px) {
    #view-bienvenida h1 { font-size: 5rem !important; margin-top: 40px !important; }
    .portal-container { flex-direction: column; }
    .btn-portal { width: 80%; margin: 10px 0; }
  }
-
 
  /* ESTILOS CARGA */
  #loading-galanes { margin-top: 50px; }
@@ -35,7 +32,6 @@
    0%, 90%, 100% { transform: scaleY(1); }
    95% { transform: scaleY(0.1); }
  }
-
 
  .contenedor-tel { display: flex; width: 90%; margin: 10px auto; border: 2px solid black; border-radius: 12px; background: #FFEE00; overflow: hidden; }
  .prefijo-select { background: transparent; border: none; padding: 0 10px; font-size: 1.2rem; border-right: 1px solid rgba(0,0,0,0.2); cursor: pointer; outline: none; }
@@ -52,12 +48,10 @@
  .ticket-linea span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; flex: 1; }
  .ticket-linea span:last-child { white-space: nowrap; font-weight: bold; }
 
-
  .aviso-cierre { background: #FFD700; color: black; padding: 20px; border: 4px solid black; border-radius: 15px; width: 90%; margin: 20px auto; font-weight: bold; font-size: 1.2rem; }
 </style>
 </head>
 <body>
-
 
 <div id="modal-alerta" class="overlay hidden">
  <div class="modal-galanes">
@@ -66,7 +60,6 @@
  </div>
 </div>
 
-
 <div id="modal-exito" class="overlay hidden">
  <div class="modal-galanes">
    <div style="color: #28a745; font-size: 5rem; line-height: 1;">✓</div>
@@ -74,7 +67,6 @@
    <button class="btn-portal" style="width: 100%; margin: 0; background: black; color: white !important;" onclick="resetPagina()">OK</button>
  </div>
 </div>
-
 
 <div id="modal-revision" class="overlay hidden">
  <div class="modal-galanes" style="text-align: left;">
@@ -89,7 +81,6 @@
  </div>
 </div>
 
-
 <div id="view-bienvenida">
  <h1 class="lobster" style="font-size: 8rem; margin-top: 80px; margin-bottom: 30px;">Los Galanes</h1>
   <div id="loading-galanes">
@@ -97,18 +88,15 @@
    <p style="font-weight: bold; color: #666; font-family: Arial; letter-spacing: 1px;">CARGANDO PRODUCTOS...</p>
  </div>
 
-
  <div id="contenedor-aviso-cierre" class="hidden">
    <div class="aviso-cierre" id="texto-aviso-cierre"></div>
  </div>
-
 
  <div id="portal-botones" class="portal-container hidden">
    <button id="btn-menu" class="btn-portal lobster" onclick="navegar('menu')">Menú</button>
    <button id="btn-tardeo" class="btn-portal lobster" onclick="navegar('tardeo')">Tardeo</button>
  </div>
 </div>
-
 
 <div id="view-pedido" class="hidden">
  <div style="padding: 20px; position: relative; border-bottom: 2px solid #000;">
@@ -123,14 +111,11 @@
    <label style="font-weight:bold;"><input type="radio" name="servicio" value="A domicilio" onchange="controlarServicio()"> ENVÍO A DOMICILIO (solo a nuestro mismo CP) +<span id="coste-envio-txt">0</span>€</label>
  </div>
 
-
  <div id="lista-productos"></div>
-
 
  <div style="padding: 10px 0;">
    <input type="text" id="obs-cliente" class="datos-input" placeholder="OBSERVACIONES">
  </div>
-
 
  <div style="padding: 20px 0; background: #f9f9f9; border-top: 2px solid #000;">
    <h3 style="text-align:left; width:90%; margin: 0 auto 10px auto;">FORMA DE PAGO</h3>
@@ -150,14 +135,11 @@
  </div>
 </div>
 
-
 <script>
  // URL IMPORTANTE: Asegúrate de que esta URL sea la de la NUEVA IMPLEMENTACIÓN /exec
  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx54FTuw81NN_H7UYlQk790IBAIG776d8dExEDa2vGQzKnHs8Npp7Kf3Pg-T43mKrLL/exec";
 
-
  let raw = null; let carrito = {}; let seccion = "";
-
 
  function inicializarWeb() {
    fetch(SCRIPT_URL + "?action=obtenerDatosMenu")
@@ -181,7 +163,6 @@
      });
  }
 
-
  function navegar(tipo) {
    seccion = tipo;
    document.getElementById('view-bienvenida').classList.add('hidden');
@@ -197,7 +178,6 @@
    window.scrollTo(0,0);
  }
 
-
  function render() {
    const cont = document.getElementById('lista-productos'); cont.innerHTML = "";
    if(!raw) return;
@@ -206,14 +186,12 @@
      cont.innerHTML += `<div class="categoria-titulo">${cat}</div>`;
      raw.menu[cat].forEach((p, i) => {
        const id = btoa(unescape(encodeURIComponent(cat + p.nombre))).replace(/=/g,"");
-       // Añadimos un atributo data-nombre para poder identificar y ocultar productos específicos
-       cont.innerHTML += `<div class="producto-fila" data-nombre="${p.nombre.toUpperCase()}"><div class="prod-info"><b>${p.nombre}</b><br><small>${p.espec || ''}</small></div><div style="display:flex; align-items:center;"><span style="font-weight:bold;">${Math.round(p.precio)}€</span><div class="btn-cantidad" style="margin-left:10px" onclick="cambiar('${id}','${cat}',${i},-1)">-</div><div id="q_${id}" class="input-cantidad">0</div><div class="btn-cantidad" onclick="cambiar('${id}','${cat}',${i},1)">+</div></div></div>`;
+       // Usamos data-nombre original para comparación exacta
+       cont.innerHTML += `<div class="producto-fila" data-nombre="${p.nombre}"><div class="prod-info"><b>${p.nombre}</b><br><small>${p.espec || ''}</small></div><div style="display:flex; align-items:center;"><span style="font-weight:bold;">${Math.round(p.precio)}€</span><div class="btn-cantidad" style="margin-left:10px" onclick="cambiar('${id}','${cat}',${i},-1)">-</div><div id="q_${id}" class="input-cantidad">0</div><div class="btn-cantidad" onclick="cambiar('${id}','${cat}',${i},1)">+</div></div></div>`;
      });
    });
-   // Tras renderizar, verificamos si hay que ocultar algo por el servicio seleccionado
    controlarServicio();
  }
-
 
  function cambiar(id, cat, idx, d) {
    if(!carrito[id]) carrito[id] = { q:0, n: raw.menu[cat][idx].nombre, p: raw.menu[cat][idx].precio };
@@ -222,7 +200,6 @@
    actualizarTotal();
  }
 
-
  function actualizarTotal() {
    let sub = 0; for(let k in carrito) sub += carrito[k].q * carrito[k].p;
    const s = document.querySelector('input[name="servicio"]:checked');
@@ -230,27 +207,25 @@
    document.getElementById('total-pantalla').innerText = "TOTAL: " + Math.round(sub + extra) + " €";
  }
 
-
  function controlarServicio() {
    const s = document.querySelector('input[name="servicio"]:checked');
    const esDom = (s && s.value === "A domicilio");
    
-   // Gestión de dirección y pago
    document.getElementById('dir').classList.toggle('hidden', !esDom);
    const labelEfectivo = document.getElementById('label-efectivo');
    if (labelEfectivo) labelEfectivo.classList.toggle('hidden', esDom);
    const pagoEfectivo = document.querySelector('input[name="pago"][value="Efectivo"]');
    if (esDom && pagoEfectivo && pagoEfectivo.checked) { pagoEfectivo.checked = false; }
 
-   // --- LÓGICA DE RESTRICCIÓN DE VINOS ---
+   // --- LÓGICA DE RESTRICCIÓN EXACTA ---
    const filas = document.querySelectorAll('.producto-fila');
    filas.forEach(fila => {
      const nombre = fila.getAttribute('data-nombre') || "";
-     const esVinoRestringido = (nombre.includes("COPA VINO BLANCO") || nombre.includes("COPA VINO TINTO"));
+     // Búsqueda exacta de las palabras solicitadas
+     const esVinoRestringido = (nombre === "Copa de vino blanco" || nombre === "Copa de vino tinto");
      
      if (esDom && esVinoRestringido) {
        fila.classList.add('hidden');
-       // Si tenían algo en el carrito de estos productos, lo ponemos a 0
        const idCant = fila.querySelector('.input-cantidad').id;
        const idCarrito = idCant.replace('q_', '');
        if (carrito[idCarrito]) {
@@ -265,10 +240,8 @@
    actualizarTotal();
  }
 
-
  function mostrarAlerta(msg) { document.getElementById('alerta-texto').innerText = msg; document.getElementById('modal-alerta').classList.remove('hidden'); }
  function cerrarAlerta() { document.getElementById('modal-alerta').classList.add('hidden'); }
-
 
  function validarYRevisar() {
    const s = document.querySelector('input[name="servicio"]:checked');
@@ -284,7 +257,6 @@
    const direccionObligatoria = (seccion === 'menu' && s && s.value === "A domicilio");
    if(!nom || !tel || (direccionObligatoria && !dir)) return mostrarAlerta("COMPLETE SUS DATOS");
 
-
    let h = ""; let t = 0; let itemsExport = [];
    for(let k in carrito) {
      if(carrito[k].q > 0) {
@@ -298,15 +270,12 @@
    if(riderCost > 0) { h += `<div class="ticket-linea" style="border-top: 1px dashed #ccc; margin-top: 5px; padding-top: 5px;"><span>RIDER</span><span>${riderCost} €</span></div>`; t += riderCost; }
    if(t === 0) return mostrarAlerta("CARRITO VACÍO");
 
-
-   // PERSONALIZACIÓN DEL BOTÓN DE CONFIRMACIÓN
    const btnPago = document.getElementById('btn-confirmar-pago');
    btnPago.disabled = false;
    btnPago.style.opacity = "1";
    btnPago.style.pointerEvents = "auto";
    const pagoValor = p.value.toUpperCase();
    btnPago.innerText = "CONFIRMAR PAGO " + (pagoValor === "EFECTIVO" ? "EN EFECTIVO" : "CON " + pagoValor);
-
 
    document.getElementById('rev-cliente').innerText = nom.toUpperCase();
    document.getElementById('rev-tel').innerText = document.getElementById('prefijo').value + tel;
@@ -325,39 +294,19 @@
    document.getElementById('modal-revision').classList.remove('hidden');
  }
 
-
  function cerrarModal() { document.getElementById('modal-revision').classList.add('hidden'); }
   function enviarPedido() {
    const btn = document.getElementById('btn-confirmar-pago');
-  
-   // BLOQUEO AGRESIVO ANTI-DUPLICADOS
    btn.disabled = true;
    btn.style.pointerEvents = "none";
    btn.style.opacity = "0.5";
    btn.innerText = "PROCESANDO PEDIDO...";
 
-
-   // Usamos un formulario oculto para evitar problemas de CORS y asegurar el envío
-   const form = document.createElement('form');
-   form.method = 'POST';
-   form.action = SCRIPT_URL;
-   form.style.display = 'none';
-
-
-   const input = document.createElement('input');
-   input.name = 'data';
-   input.value = JSON.stringify(window.ultimoP);
-   form.appendChild(input);
-   document.body.appendChild(form);
-
-
-   // Enviamos vía fetch pero con configuración de redirección para Google
    fetch(SCRIPT_URL, {
      method: 'POST',
-     mode: 'no-cors', // Esto asegura que el navegador no bloquee el envío
+     mode: 'no-cors',
      body: JSON.stringify(window.ultimoP)
    }).then(() => {
-     // Como usamos 'no-cors', no podemos leer la respuesta, pero asumimos éxito tras la espera
      setTimeout(() => {
        document.getElementById('modal-revision').classList.add('hidden');
        document.getElementById('modal-exito').classList.remove('hidden');
@@ -370,7 +319,6 @@
      btn.innerText = "REINTENTAR ENVÍO";
    });
  }
-
 
  function resetPagina() {
    carrito = {};
